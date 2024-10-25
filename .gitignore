@@ -1,0 +1,46 @@
+# Python genel
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Çevre dosyaları
+.env
+*.env
+
+# Yapı dosyaları
+build/
+dist/
+*.egg-info/
+
+# Python sanal ortamları
+.venv/
+venv/
+ENV/
+
+# IDE ve düzenleyici dosyaları
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Test çıktıları
+coverage/
+*.cover
+*.log
+
+# Geçici dosyalar
+*.tmp
+*.temp
+.DS_Store
+
+# Linux ve macOS
+*.swp
+*.swo
+
+# Dağıtım anahtarları
+deploy_key*
+
+# Çeşitli
+*.log
+*.bak
+*.old
+*.orig
