@@ -1,3 +1,4 @@
+# bot/analysis.py
 
 
 from utils.logs import Logger
@@ -60,10 +61,12 @@ class MessageAnalyser:
             response = self._client.chat.completions.create(
                 messages=[
                     {"role": "system",
-                     "content": "Sen bir toksisite tespit modelisin. Metindeki ifadelerin başka bir bireye veya kuruma "
-                                "gereğinden fazla agresif, saldırgan, aşağılayıcı veya uygunsuz olup olmadığını analiz "
-                                "et. Cevabın sadece 'evet' veya 'hayır' olmalıdır. Mesaj toksik ise 'evet', değilse "
-                                "'hayır' olarak yanıt ver."
+                     "content": "Analyze the given message as a community administrator and determine whether it is "
+                                "compliant with community guidelines or not. Specifically, does the message contain any "
+                                "harmful, offensive, or inappropriate content towards individuals or groups, include "
+                                "any offensive language, or have any aggressive tone? If the message contains any "
+                                "harmful or offensive content, please respond with 'Y', otherwise respond with 'N'. "
+                                "Only with 'Y' or 'N'"
                      },
                     message_payload
                 ],
@@ -72,7 +75,7 @@ class MessageAnalyser:
 
             self._logger.debug(f"Successfully received response from model {model}.")
             is_toxic = response.choices[0].message.content.strip().capitalize()
-            self._logger.info(f"Text classified as {'TOXIC' if is_toxic == 'Evet' else 'NOT TOXIC'} by the system.")
+            self._logger.info(f"Text classified as {'TOXIC' if is_toxic == 'E' else 'NOT TOXIC'} by the system.")
             return {'success': True, 'data': is_toxic, 'error': None}
 
         except requests.exceptions.RequestException as e:
@@ -117,7 +120,12 @@ class MessageAnalyser:
             try:
                 response = self._client.chat.completions.create(
                     messages=[
-                        {"role": "system", "content": "Sen bir analiz modelisin. Bu metindeki temel konuları özetle."},
+                        {"role": "system", "content": "Summarize the provided text summaries from the community channels"
+                                                      " of the 'Game and Application Academy' and identify key points "
+                                                      "that a community manager should prioritize. Highlight the needs "
+                                                      "of community members, questions, and requests for answers that "
+                                                      "are most relevant to the majority of users who log in. Provide an "
+                                                      "accurate and concise summary that extracts essential information."},
                         {"role": "user", "content": concatenated_text}
                     ],
                     model=self._model1

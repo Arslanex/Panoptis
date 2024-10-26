@@ -22,7 +22,7 @@ class SlackClient:
 
         self.logger.info("SlackClient initialized successfully with token.")
 
-    def list_all_channels(self, max_retries=3):
+    def fetch_channels(self, max_retries=3):
         retries = 0
         self.logger.info("Listing all Slack channels...")
 
