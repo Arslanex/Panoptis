@@ -6,16 +6,15 @@ from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Optional, Tuple, Dict, Any
 
-from slack_client import SlackClient
-from analysis import MessageAnalyser
-from dataclass import GroqConfig
+from bot.slack_client import SlackClient
+from bot.analysis import MessageAnalyser
+from bot.dataclass import GroqConfig
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt, IntPrompt, Confirm
 
 # Constants
-LAST_ACTION_FILE = 'last_action.json'
-LOG_FILE = 'bot.log'
+LAST_ACTION_FILE = 'config/config.json'
 
 # Setup console for rich output
 console = Console()
@@ -23,7 +22,7 @@ console = Console()
 def configure_logging() -> logging.Logger:
     """Configure logging settings."""
     logging.basicConfig(
-        filename=LOG_FILE,
+        filename='logs',
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
