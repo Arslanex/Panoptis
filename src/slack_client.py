@@ -1,4 +1,9 @@
+import re
 import time
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+from datetime import datetime
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
@@ -93,3 +98,50 @@ class SlackClient:
                 else:
                     return {'success': False, 'data': [], 'errors': e.response['error']}
         return {'success': False, 'data': [], 'errors': 'max_retries_exceeded'}
+
+    def save_messages_to_parquet(self, messages, channel_name):
+        """Verilen mesajları analiz sonuçları ile birlikte kanal adı ve tarihe göre Parquet dosyasına kaydeder."""
+        log_data = []
+        for msg in messages:
+            user_id = msg.get('user', 'N/A')
+            is_thread = 'Evet' if msg.get('is_thread_message', False) else 'Hayır'
+            ts = msg.get('ts', 'N/A')
+            time_str = datetime.fromtimestamp(float(ts)).strftime('%Y-%m-%d %H:%M:%S') if ts != 'N/A' else 'N/A'
+            text = msg.get('text', 'N/A')
+
+            # Mesajdaki link durumu
+            has_link = bool(re.search(r'http[s]?://', text)) if text != 'N/A' else 'N/A'
+
+            # Yanıt sayısı ve beğeni bilgisi, yoksa "N/A"
+            reply_count = str(msg.get('reply_count', 'N/A'))
+            like_count = str(sum(reaction.get('count', 0) for reaction in msg.get('reactions', [])) if 'reactions' in msg else 'N/A')
+
+            # LLM analiz sonuçları
+            sentiment = msg.get("sentiment", "N/A")
+            compliance = msg.get("compliance", "N/A")
+            keywords = ", ".join(msg.get("keywords", ["N/A"]))
+            tone = msg.get("tone", "N/A")
+            recommended_action = msg.get("recommended_action", "N/A")
+
+            log_data.append({
+                "Tarih": time_str,
+                "Kullanıcı": user_id,
+                "Thread": is_thread,
+                "Mesaj": text,
+                "Link Var mı": has_link,
+                "Yanıt Sayısı": reply_count,
+                "Beğeni Sayısı": like_count,
+                "Duygu": sentiment,
+                "Topluluk Uyum": compliance,
+                "Anahtar Kelimeler": keywords,
+                "Dil Tarzı": tone,
+                "Önerilen Aksiyon": recommended_action
+            })
+
+        # DataFrame oluştur ve Parquet dosyasına yaz
+        df = pd.DataFrame(log_data)
+
+        file_name = f"{channel_name}_{datetime.now().strftime('%Y%m%d')}.parquet"
+        table = pa.Table.from_pandas(df)
+        pq.write_table(table, file_name)
+        print(f"Mesajlar {file_name} dosyasına kaydedildi.")
