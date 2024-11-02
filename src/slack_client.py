@@ -116,11 +116,11 @@ class SlackClient:
             like_count = str(sum(reaction.get('count', 0) for reaction in msg.get('reactions', [])) if 'reactions' in msg else 'N/A')
 
             # LLM analiz sonuçları
-            sentiment = msg.get("sentiment", "N/A")
-            compliance = msg.get("compliance", "N/A")
-            keywords = ", ".join(msg.get("keywords", ["N/A"]))
-            tone = msg.get("tone", "N/A")
-            recommended_action = msg.get("recommended_action", "N/A")
+            analyzes = msg.get('analyzes', 'N/A')
+            sentiment = analyzes['sentiment'].get('value')
+            compliance = analyzes['compliance'].get('value')
+            tone = analyzes['tone'].get('value')
+            recommended_action = analyzes['recommended_action'].get('value')
 
             log_data.append({
                 "Tarih": time_str,
@@ -132,7 +132,6 @@ class SlackClient:
                 "Beğeni Sayısı": like_count,
                 "Duygu": sentiment,
                 "Topluluk Uyum": compliance,
-                "Anahtar Kelimeler": keywords,
                 "Dil Tarzı": tone,
                 "Önerilen Aksiyon": recommended_action
             })
