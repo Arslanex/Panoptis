@@ -19,7 +19,7 @@ def show_results(analyser, test_messages):
 
 
 def main():
-    analyser = MessageAnalyser(groq_config)
+    analyser = MessageAnalyser(groq_config, language='tr')
 
     test_messages = [
         "Bu ürünle ilgili çok hayal kırıklığına uğradım. Kalitesi beklediğimden çok daha kötüydü ve müşteri hizmetleri de yardımcı olmadı.",
