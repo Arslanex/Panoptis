@@ -100,7 +100,6 @@ class SlackClient:
         return {'success': False, 'data': [], 'errors': 'max_retries_exceeded'}
 
     def save_messages_to_parquet(self, messages, channel_name):
-        """Verilen mesajları analiz sonuçları ile birlikte kanal adı ve tarihe göre Parquet dosyasına kaydeder."""
         log_data = []
         for msg in messages:
             user_id = msg.get('user', 'N/A')
