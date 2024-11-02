@@ -99,7 +99,7 @@ class SlackClient:
                     return {'success': False, 'data': [], 'errors': e.response['error']}
         return {'success': False, 'data': [], 'errors': 'max_retries_exceeded'}
 
-    def save_messages_to_parquet(self, messages, channel_name):
+    def save_messages_to_parquet(self, messages, channel_name, folder_path):
         log_data = []
         for msg in messages:
             user_id = msg.get('user', 'N/A')
@@ -140,7 +140,7 @@ class SlackClient:
         # DataFrame oluştur ve Parquet dosyasına yaz
         df = pd.DataFrame(log_data)
 
-        file_name = f"{channel_name}_{datetime.now().strftime('%Y%m%d')}.parquet"
+        file_name = f"{folder_path}/{channel_name}_{datetime.now().strftime('%Y%m%d')}.parquet"
         table = pa.Table.from_pandas(df)
         pq.write_table(table, file_name)
         print(f"Mesajlar {file_name} dosyasına kaydedildi.")
